@@ -1,406 +1,224 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W-ChatView - Global Communication Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Marketplace</title>
     <style>
-        :root {
-            --primary-color: #6c5ce7;
-            --secondary-color: #a29bfe;
-            --accent-color: #fd79a8;
-            --dark-color: #2d3436;
-            --light-color: #f5f6fa;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-        
-        .theme-gradient {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-        }
-        
-        .story-ring {
-            background: linear-gradient(45deg, #fd79a8, #e84393, #6c5ce7);
-        }
-        
-        .message-bubble {
-            max-width: 70%;
-            border-radius: 18px;
-            position: relative;
-        }
-        
-        .message-bubble.sent {
-            background-color: var(--primary-color);
+        .header {
+            background-color: #007bff;
             color: white;
-            border-bottom-right-radius: 2px;
-            margin-left: auto;
+            padding: 10px;
+            text-align: center;
         }
-        
-        .message-bubble.received {
-            background-color: #e0e0e0;
-            color: var(--dark-color);
-            border-bottom-left-radius: 2px;
+        .search-bar {
+            margin: 20px;
+            text-align: center;
         }
-        
-        .tab-content {
-            display: none;
+        .search-bar input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .language-switch {
-            position: relative;
-            width: 60px;
-            height: 30px;
-        }
-        
-        .language-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .language-slider {
-            position: absolute;
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--primary-color);
-            transition: .4s;
-            border-radius: 34px;
         }
-        
-        .language-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .language-slider:before {
-            transform: translateX(30px);
-        }
-        
-        .language-labels {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 100%;
+        .categories {
             display: flex;
-            justify-content: space-between;
-            padding: 0 8px;
-            pointer-events: none;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px;
         }
-        
-        .language-labels span {
-            color: white;
-            font-size: 12px;
+        .categories select {
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .product-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product-card h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .product-card p {
+            color: #555;
+        }
+        .product-card .price {
+            color: #28a745;
             font-weight: bold;
         }
-        
-        .story-item {
-            width: 70px;
-            height: 70px;
-            flex-shrink: 0;
+        .product-card button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        
-        .media-item {
-            width: calc(33.333% - 8px);
-            margin-bottom: 12px;
-            aspect-ratio: 1/1;
+        .sell-form {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        
-        @media (max-width: 640px) {
-            .media-item {
-                width: calc(50% - 6px);
-            }
+        .sell-form input, .sell-form textarea, .sell-form select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .sell-form button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col">
-        <!-- Header -->
-        <header class="theme-gradient text-white p-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
-                        <i class="fas fa-comment-dots text-purple-600 text-xl"></i>
-                    </div>
-                    <h1 class="text-xl font-bold">W-ChatView</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button class="text-white">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    <div class="language-switch">
-                        <input type="checkbox" id="languageToggle">
-                        <label for="languageToggle" class="language-slider"></label>
-                        <div class="language-labels">
-                            <span>EN</span>
-                            <span>AR</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tabs Navigation -->
-            <div class="flex justify-between mt-6">
-                <button class="tab-btn active py-2 px-4 font-medium border-b-2 border-white" data-tab="chats">
-                    <i class="fas fa-comment-alt mr-2"></i> Chats
-                </button>
-                <button class="tab-btn py-2 px-4 font-medium" data-tab="media">
-                    <i class="fas fa-photo-video mr-2"></i> Media
-                </button>
-                <button class="tab-btn py-2 px-4 font-medium" data-tab="friends">
-                    <i class="fas fa-user-friends mr-2"></i> Friends
-                </button>
-                <button class="tab-btn py-2 px-4 font-medium" data-tab="settings">
-                    <i class="fas fa-cog mr-2"></i> Settings
-                </button>
-            </div>
-        </header>
-        
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
-            <!-- Chats Tab -->
-            <div id="chats" class="tab-content active p-4">
-                <!-- Stories Section -->
-                <div class="mb-6">
-                    <h2 class="text-lg font-semibold mb-3 text-gray-700">Stories</h2>
-                    <div class="flex space-x-4 overflow-x-auto pb-2">
-                        <!-- My Story -->
-                        <div class="story-item flex flex-col items-center">
-                            <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mb-1 relative">
-                                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden">
-                                    <i class="fas fa-plus text-purple-600"></i>
-                                </div>
-                            </div>
-                            <span class="text-xs text-gray-600">My Story</span>
-                        </div>
-                        
-                        <!-- Friends' Stories -->
-                        <div class="story-item flex flex-col items-center">
-                            <div class="w-14 h-14 rounded-full flex items-center justify-center mb-1 story-ring p-0.5">
-                                <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Friend" class="w-full h-full object-cover">
-                                </div>
-                            </div>
-                            <span class="text-xs text-gray-600">Sarah</span>
-                        </div>
-                        
-                        <div class="story-item flex flex-col items-center">
-                            <div class="w-14 h-14 rounded-full flex items-center justify-center mb-1 story-ring p-0.5">
-                                <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Friend" class="w-full h-full object-cover">
-                                </div>
-                            </div>
-                            <span class="text-xs text-gray-600">Ahmed</span>
-                        </div>
-                        
-                        <div class="story-item flex flex-col items-center">
-                            <div class="w-14 h-14 rounded-full flex items-center justify-center mb-1 story-ring p-0.5">
-                                <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Friend" class="w-full h-full object-cover">
-                                </div>
-                            </div>
-                            <span class="text-xs text-gray-600">Layla</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Chats -->
-                <h2 class="text-lg font-semibold mb-3 text-gray-700">Recent Chats</h2>
-                <div class="space-y-3">
-                    <!-- Chat Item -->
-                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                        <div class="relative mr-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center">
-                                <h3 class="font-medium">Mohammed</h3>
-                                <span class="text-xs text-gray-500">2:30 PM</span>
-                            </div>
-                            <p class="text-sm text-gray-600 truncate">Hey, how are you doing?</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Chat Item -->
-                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                        <div class="relative mr-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="User" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center">
-                                <h3 class="font-medium">Aisha</h3>
-                                <span class="text-xs text-gray-500">10:45 AM</span>
-                            </div>
-                            <p class="text-sm text-gray-600 truncate">Check out this photo I sent!</p>
-                        </div>
-                        <div class="w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
-                            <span class="text-white text-xs">2</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Chat Item -->
-                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                        <div class="relative mr-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center">
-                                <h3 class="font-medium">Work Group</h3>
-                                <span class="text-xs text-gray-500">Yesterday</span>
-                            </div>
-                            <p class="text-sm text-gray-600 truncate">Meeting at 3pm tomorrow</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Media Tab -->
-            <div id="media" class="tab-content p-4">
-                <h2 class="text-lg font-semibold mb-4 text-gray-700">Shared Media</h2>
-                <div class="flex flex-wrap justify-between">
-                    <!-- Media Items -->
-                    <div class="media-item bg-gray-200 rounded-lg overflow-hidden">
-                        <img src="https://source.unsplash.com/random/300x300?nature" alt="Media" class="w-full h-full object-cover">
-                    </div>
-                    <div class="media-item bg-gray-200 rounded-lg overflow-hidden">
-                        <img src="https://source.unsplash.com/random/300x300?city" alt="Media" class="w-full h-full object-cover">
-                    </div>
-                    <div class="media-item bg-gray-200 rounded-lg overflow-hidden">
-                        <img src="https://source.unsplash.com/random/300x300?food" alt="Media" class="w-full h-full object-cover">
-                    </div>
-                    <div class="media-item bg-gray-200 rounded-lg overflow-hidden">
-                        <img src="https://source.unsplash.com/random/300x300?animal" alt="Media" class="w-full h-full object-cover">
-                    </div>
-                    <div class="media-item bg-gray-200 rounded-lg overflow-hidden">
-                        <img src="https://source.unsplash.com/random/300x300?travel" alt="Media" class="w-full h-full object-cover">
-                    </div>
-                    <div class="media-item bg-gray-200 rounded-lg overflow-hidden">
-                        <img src="https://source.unsplash.com/random/300x300?people" alt="Media" class="w-full h-full object-cover">
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Friends Tab -->
-            <div id="friends" class="tab-content p-4">
-                <h2 class="text-lg font-semibold mb-4 text-gray-700">Friends</h2>
-                
-                <!-- Search -->
-                <div class="relative mb-4">
-                    <input type="text" placeholder="Search friends..." class="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
-                </div>
-                
-                <!-- Friends List -->
-                <div class="space-y-3">
-                    <!-- Friend Item -->
-                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                        <div class="relative mr-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Friend" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-medium">Sarah Johnson</h3>
-                            <p class="text-sm text-gray-600">Last seen today at 1:45 PM</p>
-                        </div>
-                        <button class="text-purple-600">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- Friend Item -->
-                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                        <div class="relative mr-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Friend" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-medium">Ahmed Ali</h3>
-                            <p class="text-sm text-gray-600">Online now</p>
-                        </div>
-                        <button class="text-purple-600">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- Friend Item -->
-                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                        <div class="relative mr-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Friend" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-medium">Layla Mohammed</h3>
-                            <p class="text-sm text-gray-600">Last seen yesterday</p>
-                        </div>
-                        <button class="text-purple-600">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Add Friends Button -->
-                <button class="fixed bottom-20 right-4 w-14 h-14 rounded-full theme-gradient text-white flex items-center justify-center shadow-lg">
-                    <i class="fas fa-user-plus text-xl"></i>
-                </button>
-            </div>
-            
-            <!-- Settings Tab -->
-            <div id="settings" class="tab-content p-4">
-                <h2 class="text-lg font-semibold mb-4 text-gray-700">Settings</h2>
-                
-                <!-- Profile Section -->
-                <div class="flex items-center mb-6">
-                    <div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden mr-4">
-                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="font-medium text-lg">John Doe</h3>
-                        <p class="text-gray-600">+1 234 567 890</p>
-                    </div>
-                </div>
-                
-                <!-- Settings Options -->
-                <div class="space-y-4">
-                    <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-medium">Notifications</h3>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    <
+<body>
+    <div class="header">
+        <h1>Marketplace</h1>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products...">
+        <button onclick="searchProducts()">Search</button>
+    </div>
+
+    <div class="categories">
+        <select id="categoryFilter" onchange="filterProducts()">
+            <option value="all">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="vehicles">Vehicles</option>
+        </select>
+    </div>
+
+    <div class="product-grid" id="productGrid">
+        <!-- Product cards will be populated here -->
+    </div>
+
+    <div class="sell-form">
+        <h2>Sell a Product</h2>
+        <input type="text" id="productName" placeholder="Product Name">
+        <textarea id="productDescription" placeholder="Description"></textarea>
+        <input type="number" id="productPrice" placeholder="Price ($)">
+        <select id="productCategory">
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="vehicles">Vehicles</option>
+        </select>
+        <input type="file" id="productImage" accept="image/*">
+        <button onclick="addProduct()">Post Product</button>
+    </div>
+
+    <script>
+        // Sample product data (replace with backend API in a real app)
+        let products = [
+            { id: 1, name: "Smartphone", description: "Latest model", price: 500, category: "electronics", image: "https://via.placeholder.com/150" },
+            { id: 2, name: "Jacket", description: "Winter jacket", price: 80, category: "clothing", image: "https://via.placeholder.com/150" },
+            { id: 3, name: "Car", description: "Used sedan", price: 15000, category: "vehicles", image: "https://via.placeholder.com/150" }
+        ];
+
+        // Display products
+        function displayProducts(filteredProducts) {
+            const productGrid = document.getElementById("productGrid");
+            productGrid.innerHTML = "";
+            filteredProducts.forEach(product => {
+                const productCard = document.createElement("div");
+                productCard.className = "product-card";
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p>${product.description}</p>
+                    <p class="price">$${product.price}</p>
+                    <button onclick="buyProduct(${product.id})">Buy Now</button>
+                `;
+                productGrid.appendChild(productCard);
+            });
+        }
+
+        // Search products
+        function searchProducts() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const filteredProducts = products.filter(product =>
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
+            );
+            displayProducts(filteredProducts);
+        }
+
+        // Filter products by category
+        function filterProducts() {
+            const category = document.getElementById("categoryFilter").value;
+            const filteredProducts = category === "all" ? products : products.filter(product => product.category === category);
+            displayProducts(filteredProducts);
+        }
+
+        // Add a new product
+        function addProduct() {
+            const name = document.getElementById("productName").value;
+            const description = document.getElementById("productDescription").value;
+            const price = parseFloat(document.getElementById("productPrice").value);
+            const category = document.getElementById("productCategory").value;
+            const image = document.getElementById("productImage").files[0];
+
+            if (name && description && price && category) {
+                const newProduct = {
+                    id: products.length + 1,
+                    name,
+                    description,
+                    price,
+                    category,
+                    image: image ? URL.createObjectURL(image) : "https://via.placeholder.com/150"
+                };
+                products.push(newProduct);
+                displayProducts(products);
+                alert("Product posted successfully!");
+                document.querySelector(".sell-form").reset();
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+
+        // Buy product (placeholder)
+        function buyProduct(id) {
+            alert(`Buying product with ID ${id}. (Implement payment logic here.)`);
+        }
+
+        // Initial display
+        displayProducts(products);
+    </script>
+</body>
+</html>
